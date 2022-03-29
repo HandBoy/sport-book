@@ -14,7 +14,7 @@ from .ext import database, serializer
 def mock_env(monkeypatch):
     monkeypatch.setenv("SECRET_KEY", "mock-secret-key")
     monkeypatch.setenv("FLASK_ENV", "testing")
-    monkeypatch.setenv("DATABASE_URL", "testing_sqlite")
+    monkeypatch.setenv("DATABASE_URL", ":memory:")
     monkeypatch.setenv("TOKEN_EXPIRES", "50")
 
 

@@ -1,6 +1,6 @@
 from http import HTTPStatus
 
-from app.use_cases import ListSportsUsecase
+from app.use_cases import CreateSportsUsecase, ListSportsUsecase
 from flask import jsonify
 from flask_apispec import MethodResource, doc, marshal_with, use_kwargs
 
@@ -14,11 +14,14 @@ class SportsView(MethodResource):
     def get(self):
         use_case = ListSportsUsecase()
         sports = use_case.execute()
-        return jsonify(SportResponseSchema(many=True).dump(sports))
+        return sports
 
     @use_kwargs(SportRequestSchema)
     @marshal_with(SportResponseSchema, code=HTTPStatus.CREATED)
-    def post(self):
-        use_case = ListSportsUsecase()
-        sports = use_case.execute()
-        return jsonify(SportResponseSchema(many=True).dump(sports))
+    def post(self, **kwargs):
+        sport_raw = SportRequestSchema().load(kwargs)
+
+        use_case = CreateSportsUsecase()
+        sport_raw = use_case.execute(sport_raw)
+
+        return sport_raw.dict(), 201

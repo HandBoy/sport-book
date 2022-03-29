@@ -25,7 +25,7 @@ class TestingConfig(BaseConfig):
     TESTING = True
     LOG_LEVEL = "DEBUG"
     SECRET_KEY = environ.get("SECRET_KEY", "test-secret-key")
-    DATABASE_URL = environ.get("DATABASE_URL", "test_sqlite")
+    DATABASE_URL = ":memory:"
 
 
 config_by_name = dict(
