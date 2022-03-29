@@ -2,3 +2,4 @@
 black==22.1.0
 factory-boy==3.2.1
 ipdb==0.13.9
+pytest-flask==1.2.0
