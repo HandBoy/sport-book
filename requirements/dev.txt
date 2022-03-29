@@ -1,0 +1,4 @@
+-r base.txt
+black==22.1.0
+factory-boy==3.2.1
+ipdb==0.13.9
