@@ -31,7 +31,6 @@ class TestPostSports:
 
     def test_error_create_sport_without_slug(self, client):
         # Given
-        expected_contract = ["uuid", "slug", "active", "created_at"]
         data = {"active": True}
         # When
         response = client.post("/api/v1/sports", json=data)

@@ -5,6 +5,8 @@ from flask import Flask
 from flask_restful import Api
 
 from app import configuration
+from app.domain import Sport
+from app.repositories import SportRepository
 
 from .api import sports
 from .ext import database, serializer
@@ -33,3 +35,15 @@ def app(mock_env):
 
         api.add_resource(sports.SportsView, "/api/v1/sports")
         yield app
+
+
+@pytest.fixture()
+def create_sport():
+    repository = SportRepository()
+    repository.create_sport(
+        Sport(
+            id=1,
+            slug="teste-01",
+            active=True,
+        ).dict()
+    )
