@@ -1,11 +1,13 @@
-from flask import Flask
-from flask_restful import Api
-from .ext import database, serializer, swagger
-from . import configuration
-from app.api import sports, pets
-
 from os import environ
+
+from flask import Flask
 from flask_apispec import FlaskApiSpec
+from flask_restful import Api
+
+from app.api import sports
+
+from . import configuration
+from .ext import database, serializer
 
 
 def create_app(config_name=None):
@@ -17,13 +19,13 @@ def create_app(config_name=None):
 
     database.init_app(app)
     serializer.init_app(app)
-    swagger.init_app(app)
+    #swagger.init_app(app)
 
-    api.add_resource(sports.SportsView, "/api/v1/sports")
-    api.add_resource(pets.PetResource, "/api/pet")
+    api.add_resource(sports.SportsListView, "/api/v1/sports")
+    api.add_resource(sports.SportsView, "/api/v1/sports/<uuid:sport_id>")
 
     docs = FlaskApiSpec(app)
+    docs.register(sports.SportsListView)
     docs.register(sports.SportsView)
-    docs.register(pets.PetResource)
 
     return app

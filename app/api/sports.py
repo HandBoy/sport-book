@@ -1,27 +1,44 @@
 from http import HTTPStatus
+import uuid
+from app.api.exceptions import ApiSportNotFound
+from app.repositories import SportNotFoundException
 
-from app.use_cases import CreateSportsUsecase, ListSportsUsecase
-from flask import jsonify
+from app.use_cases import CreateSportsUsecase, ListSportsUsecase, UpdateSportsUsecase
 from flask_apispec import MethodResource, doc, marshal_with, use_kwargs
 
-from .serializers.in_bound import SportRequestSchema
-from .serializers.out_bound import SportResponseSchema
+from .serializers.sport_schemas import SportInSchema, SportOutSchema
 
 
 @doc(description="a pet store", tags=["sport"])
-class SportsView(MethodResource):
-    @marshal_with(SportResponseSchema(many=True))
+class SportsListView(MethodResource):
+    @marshal_with(SportOutSchema(many=True))
     def get(self):
         use_case = ListSportsUsecase()
         sports = use_case.execute()
         return sports
 
-    @use_kwargs(SportRequestSchema)
-    @marshal_with(SportResponseSchema, code=HTTPStatus.CREATED)
+    @use_kwargs(SportInSchema)
+    @marshal_with(SportOutSchema, code=HTTPStatus.CREATED)
     def post(self, **kwargs):
-        sport_raw = SportRequestSchema().load(kwargs)
+        sport_raw = SportInSchema().load(kwargs)
 
         use_case = CreateSportsUsecase()
         sport_raw = use_case.execute(sport_raw)
 
         return sport_raw.dict(), 201
+
+@doc(description="a pet store", tags=["sport"])
+class SportsView(MethodResource):
+    @use_kwargs(SportInSchema)
+    @marshal_with(SportOutSchema, code=HTTPStatus.OK)
+    def put(self, sport_id: uuid.UUID, **kwargs):
+       
+        sport_raw = SportInSchema().load(kwargs)
+
+        use_case = UpdateSportsUsecase()
+        try:
+            sport_raw = use_case.execute(sport_id, sport_raw)
+        except SportNotFoundException as err:
+            raise ApiSportNotFound()
+
+        return sport_raw.dict(), 200

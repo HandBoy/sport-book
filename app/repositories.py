@@ -1,16 +1,27 @@
 from typing import List
-
-from pydantic import ValidationError
+from uuid import UUID
 
 from .domain import Sport
 from .ext.database import get_db
 
 
-class SportValidationErrorException(Exception):
-    def __init__(self, message):
-        Exception.__init__(self)
-        self.message = message
+class SportRepositoryException(Exception):
+    pass
 
+
+class SportValidationErrorException(SportRepositoryException):
+    pass
+
+
+class SportNotFoundException(SportRepositoryException):
+    def __init__(self):
+        Exception.__init__(self)
+        self.message = "Sport not found"
+
+
+class SportIntegrityError(SportRepositoryException):
+    def __init__(self, message):
+        self.message = message
 
 class SportRepository:
     def __init__(self) -> None:
@@ -32,18 +43,37 @@ class SportRepository:
             (id,),
         ).fetchone()
 
+        if result is None:
+            raise SportNotFoundException()
+
         return Sport(**result)
 
-    def create_sport(self, sport_raw: Sport):
-        try:
-            sport = Sport(**sport_raw)
-        except ValidationError as ex:
-            raise SportValidationErrorException(ex.errors)
-
+    def get_sport_by_uuid(self, uuid: UUID):
         result = self.db.execute(
-            "INSERT INTO sport (uuid, slug, active)" " VALUES (?, ?, ?)",
+            "SELECT * FROM sport WHERE uuid = ?",
+            (str(uuid),),
+        ).fetchone()
+
+        if result is None:
+            raise SportNotFoundException()
+
+        return Sport(**result)
+
+    def create_sport(self, sport: Sport) -> Sport:
+        result = self.db.execute(
+            "INSERT INTO sport (uuid, slug, active) VALUES (?, ?, ?)",
             (str(sport.uuid), sport.slug, sport.active),
         )
         self.db.commit()
 
         return self.get_sport_by_id(result.lastrowid)
+
+    def update_sport(self, uuid: UUID, sport: Sport) -> Sport:
+        self.db.execute(
+            "UPDATE sport SET slug = ?, active = ? WHERE uuid = ?",
+            (sport.slug, sport.active, str(uuid)),
+        ).fetchone()
+
+        self.db.commit()
+
+        return self.get_sport_by_uuid(uuid)

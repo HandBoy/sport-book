@@ -1,7 +1,10 @@
 from typing import Dict, List
+from uuid import UUID
+
+from pydantic import ValidationError
 
 from app.domain import Sport
-from app.repositories import SportRepository
+from app.repositories import SportRepository, SportValidationErrorException
 
 
 class ListSportsUsecase:
@@ -12,7 +15,25 @@ class ListSportsUsecase:
 
 
 class CreateSportsUsecase:
-    def execute(self, sport: Sport) -> Sport:
+    def execute(self, sport_raw: Dict) -> Sport:
         repo = SportRepository()
-        sports = repo.create_sport(sport)
-        return sports
+        try:
+            sport = Sport(**sport_raw)
+            sport = repo.create_sport(sport)
+            return sport
+        except ValidationError as ex:
+            raise SportValidationErrorException(ex.errors)
+
+
+class UpdateSportsUsecase:
+    def execute(self, uuid: UUID, sport_raw: Dict) -> Sport:
+        repo = SportRepository()
+        repo.get_sport_by_uuid(uuid)
+
+        try:
+            sport = Sport(**sport_raw)
+        except ValidationError as ex:
+            raise SportValidationErrorException(ex.errors)
+
+        sport = repo.update_sport(uuid, sport)
+        return sport

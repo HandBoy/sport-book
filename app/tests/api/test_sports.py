@@ -1,3 +1,6 @@
+import uuid
+
+
 class TestListSports:
     def test_list_sport(self, client):
         # Give
@@ -37,3 +40,50 @@ class TestPostSports:
         data = response.json
         # Then
         assert response.status_code == 422
+
+
+class TestUpdateSports:
+    def test_update_sport(self, client, create_sport):
+        # Given
+        expected_sport = {"slug": "test_updated", "active": False}
+        # When
+        response = client.put(
+            f"/api/v1/sports/{create_sport.uuid}",
+            json=expected_sport,
+        )
+
+        data = response.json
+        # Assert
+        assert response.status_code == 200
+        assert data.get("slug") == expected_sport.get("slug")
+        assert data.get("active") == expected_sport.get("active")
+
+    def test_update_sport_without_slug(self, client, create_sport):
+        # Given
+        expected_sport = {"active": False}
+        # When
+
+        response = client.put(
+            f"/api/v1/sports/{str(create_sport.uuid)}",
+            json=expected_sport,
+        )
+        data = response.json
+        # Assert
+        assert response.status_code == 422
+
+    def test_update_sport_with_unexistent_slug(
+        self,
+        client,
+    ):
+        # Given
+        expected_sport = {"slug": "test_updated", "active": False}
+        # When
+        response = client.put(
+            f"/api/v1/sports/{str(uuid.uuid4())}",
+            json=expected_sport,
+        )
+        data = response.json
+        # Assert
+        assert response.status_code == 404
+        assert "message" in data
+        assert data["message"] == "Sport not found"
