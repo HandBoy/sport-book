@@ -6,13 +6,43 @@ from app.use_cases import CreateSportsUsecase, ListSportsUsecase, UpdateSportsUs
 
 
 class TestListSportsUsecase:
-    def test_create_sport(self, app, create_sport):
+    def test_list_sport(self, app, create_sport):
         # Give
         use_case = ListSportsUsecase()
         # Act
         sports = use_case.execute()
         # Them
         assert len(sports) == 3
+
+    def test_get_sports_by_slug(self, app, create_sport):
+        # Give
+        filters = {"slug": create_sport.slug}
+        use_case = ListSportsUsecase()
+        # Act
+        sports = use_case.execute(filters)
+        # Them
+        assert sports != None
+        assert len(sports) == 1
+
+    def test_get_sports_by_slug_and_active(self, app, create_sport):
+        # Give
+        filters = {"slug": create_sport.slug, "active": create_sport.active}
+        use_case = ListSportsUsecase()
+        # Act
+        sports = use_case.execute(filters)
+        # Them
+        assert sports != None
+        assert len(sports) == 1
+
+    def test_get_sports_by_slug_and_active_false(self, app, create_sport):
+        # Give
+        filters = {"slug": create_sport.slug, "active": False}
+        use_case = ListSportsUsecase()
+        # Act
+        sports = use_case.execute(filters)
+        # Them
+        assert sports != None
+        assert len(sports) == 0
 
 
 class TestCreateSportsUsecase:

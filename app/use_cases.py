@@ -8,9 +8,9 @@ from app.repositories import SportRepository, SportValidationErrorException
 
 
 class ListSportsUsecase:
-    def execute(self) -> List[Sport]:
+    def execute(self, filters: Dict = None) -> List[Sport]:
         repo = SportRepository()
-        sports = repo.get_sport()
+        sports = repo.get_sport(filters)
         return sports
 
 

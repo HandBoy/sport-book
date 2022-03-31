@@ -10,6 +10,33 @@ class TestListSports:
         assert response.status_code == 200
         assert len(response.json) == 2
 
+    def test_get_sports_by_slug(self, app, client, create_sport):
+        # Give
+        filters = f"?slug={create_sport.slug}"
+        # Act
+        response = client.get(f"/api/v1/sports{filters}")
+        # Then
+        assert response.status_code == 200
+        assert len(response.json) == 1
+
+    def test_get_sports_by_slug_and_active(self, app, client, create_sport):
+        # Give
+        filters = f"?slug={create_sport.slug}&active=1"
+        # Act
+        response = client.get(f"/api/v1/sports{filters}")
+        # Them
+        assert response.status_code == 200
+        assert len(response.json) == 1
+
+    def test_get_sports_by_slug_and_active_false(self, app, client, create_sport):
+        # Give
+        filters = f"?slug={create_sport.slug}&active=0"
+        # Act
+        response = client.get(f"/api/v1/sports{filters}")
+        # Them
+        assert response.status_code == 200
+        assert len(response.json) == 0
+
 
 class TestPostSports:
     def test_create_sport(self, client):
