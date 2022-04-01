@@ -2,7 +2,7 @@ import uuid
 from http import HTTPStatus
 
 from app.api.exceptions import ApiSportNotFound
-from app.repositories import SportNotFoundException
+from app.repositories.sport_repository import SportNotFoundException
 from app.use_cases import CreateSportsUsecase, ListSportsUsecase, UpdateSportsUsecase
 from flask import request
 from flask_apispec import MethodResource, doc, marshal_with, use_kwargs

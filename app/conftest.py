@@ -2,7 +2,7 @@ import pytest
 
 from app import create_app
 from app.domain import Sport
-from app.repositories import SportRepository
+from app.repositories.sport_repository import SportRepository
 
 from .ext import database
 

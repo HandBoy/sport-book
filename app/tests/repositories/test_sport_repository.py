@@ -2,7 +2,8 @@ import uuid
 
 import pytest
 from app.domain import Sport
-from app.repositories import SportNotFoundException, SportRepository
+from app.repositories.exceptions import SportNotFoundException
+from app.repositories.sport_repository import SportRepository
 
 
 class TestSportRepository:

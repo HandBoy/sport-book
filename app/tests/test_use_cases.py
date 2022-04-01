@@ -1,7 +1,7 @@
 import uuid
 
 import pytest
-from app.repositories import SportNotFoundException, SportValidationErrorException
+from app.repositories.exceptions import SportNotFoundException, SportValidationErrorException
 from app.use_cases import CreateSportsUsecase, ListSportsUsecase, UpdateSportsUsecase
 
 

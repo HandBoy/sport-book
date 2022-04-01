@@ -1,27 +1,10 @@
 from typing import Dict, List
 from uuid import UUID
 
-from .domain import Sport
-from .ext.database import get_db
+from .exceptions import SportNotFoundException
 
-
-class SportRepositoryException(Exception):
-    pass
-
-
-class SportValidationErrorException(SportRepositoryException):
-    pass
-
-
-class SportNotFoundException(SportRepositoryException):
-    def __init__(self):
-        Exception.__init__(self)
-        self.message = "Sport not found"
-
-
-class SportIntegrityError(SportRepositoryException):
-    def __init__(self, message):
-        self.message = message
+from ..domain import Sport
+from ..ext.database import get_db
 
 
 class SportRepository:
