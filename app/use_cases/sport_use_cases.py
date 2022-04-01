@@ -3,9 +3,9 @@ from uuid import UUID
 
 from pydantic import ValidationError
 
-from .domain import Sport
-from .repositories.exceptions import SportValidationErrorException
-from .repositories.sport_repository import SportRepository
+from ..domain import Sport
+from ..repositories.exceptions import SportValidationErrorException
+from ..repositories.sport_repository import SportRepository
 
 
 class ListSportsUsecase:

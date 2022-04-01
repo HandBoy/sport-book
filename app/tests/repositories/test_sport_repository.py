@@ -2,11 +2,12 @@ import uuid
 
 import pytest
 from app.domain import Sport
+from app.repositories import generate_query_filter
 from app.repositories.exceptions import SportNotFoundException
 from app.repositories.sport_repository import SportRepository
 
 
-class TestSportRepository:
+class TestGetSportRepository:
     def test_get_sports(self, app):
         # Give
         repository = SportRepository()
@@ -56,6 +57,7 @@ class TestSportRepository:
         assert sports != None
         assert len(sports) == 3
 
+class TestCreateSportRepository:
     def test_create_sport(self, app):
         # Give
         repository = SportRepository()
@@ -67,6 +69,7 @@ class TestSportRepository:
         assert sport.slug == expected_sport.slug
         assert sport.active == expected_sport.active
 
+class TestUpdateSportRepository:
     def test_update_sport(self, app, create_sport):
         # Give
         repository = SportRepository()
@@ -93,42 +96,38 @@ class TestSportRepository:
 class TestGenerateQueryFilterRepository:
     def test_query_without_filter(self, app):
         # Give
-        repository = SportRepository()
         filters = {}
         query = ""
         # Act
-        repository.generate_query_filter(filters)
+        query = generate_query_filter(filters)
         # Them
-        assert query == ""
+        assert query == None
 
     def test_query_with_one_filter(self, app):
         # Give
-        repository = SportRepository()
         filters = {"one": 1}
         query = ""
         # Act
-        query = repository.generate_query_filter(filters)
+        query = generate_query_filter(filters)
         # Them
         assert query != ""
         assert "AND" not in query
 
     def test_query_with_two_filter(self, app):
         # Give
-        repository = SportRepository()
         filters = {"one": 1, "two": 2}
         query = ""
         # Act
-        query = repository.generate_query_filter(filters)
+        query = generate_query_filter(filters)
         # Them
         assert query == "WHERE one = ? AND two = ? "
 
     def test_query_with_more_than_two_filter(self, app):
         # Give
-        repository = SportRepository()
         filters = {"one": 1, "two": 2, "more_one": 3}
         query = ""
         # Act
-        query = repository.generate_query_filter(filters)
+        query = generate_query_filter(filters)
         # Them
         assert query.count("AND") == 2
         assert query == "WHERE one = ? AND two = ? AND more_one = ? "

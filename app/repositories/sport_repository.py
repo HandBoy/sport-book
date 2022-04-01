@@ -1,6 +1,8 @@
 from typing import Dict, List
 from uuid import UUID
 
+from . import generate_query_filter
+
 from .exceptions import SportNotFoundException
 
 from ..domain import Sport
@@ -11,14 +13,14 @@ class SportRepository:
     def __init__(self) -> None:
         self.db = get_db()
 
-    def get_sport(self, filters: Dict = None) -> List[Sport]:        
+    def get_sport(self, filters: Dict = None) -> List[Sport]:
         sports = []
         parameters = ()
 
         query = "SELECT * FROM sport "
 
         if filters:
-            query += self.generate_query_filter(filters)
+            query += generate_query_filter(filters)
             parameters = tuple(filters.values())
 
         result = self.db.execute(query, parameters).fetchall()
@@ -27,24 +29,6 @@ class SportRepository:
             sports.append(Sport(**sport))
 
         return sports
-
-    def generate_query_filter(self, filters: Dict) -> str:
-        if not filters:
-            return
-
-        query = "WHERE "
-        parameters = ""
-
-        it = iter(filters)
-        f = next(it, None)
-
-        while f:
-            parameters += f"{f} = ? "
-            f = next(it, None)
-            if f:
-                parameters += f"AND "
-
-        return query + parameters
 
     def get_sport_by_id(self, id: int) -> Sport:
         result = self.db.execute(
