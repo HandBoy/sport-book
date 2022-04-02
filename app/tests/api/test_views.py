@@ -229,3 +229,75 @@ class TestPostEvents:
         assert response.status_code == 422
         assert "message" in response.json
         assert "code" in response.json
+
+
+class TestUpdateEvents:
+    def make_raw_event(self, create_sport):
+        name = "Updated Event"
+        return {
+            "sport_uuid": create_sport.uuid,
+            "name": name,
+            "active": True,
+            "event_type": EventType.preplay.value,
+            "status": EventStatus.pending.value,
+            "scheduled_at": datetime.utcnow().isoformat(),
+            "start_at": datetime.utcnow().isoformat(),
+        }
+
+    def test_create_event(self, client, create_sport, create_event):
+        # Given
+        data = self.make_raw_event(create_sport)
+        # When
+        response = client.put(
+            f"/api/v1/events/{str(create_event.uuid)}",
+            json=data,
+        )
+        result = response.json
+        # Assert
+        assert response.status_code == 200
+        assert result["name"] == data["name"]
+    def test_error_create_event_without_required_field(
+        self, client, create_sport, create_event
+    ):
+        # Given
+        data = self.make_raw_event(create_sport)
+        del data["scheduled_at"]
+        del data["event_type"]
+        # When
+        response = client.put(
+            f"/api/v1/events/{str(create_event.uuid)}",
+            json=data,
+        )
+        result = response.json
+        # Assert
+        assert response.status_code == 422
+
+    def test_error_create_event_with_invalid_datetime(
+        self, client, create_sport, create_event
+    ):
+        # Given
+        data = self.make_raw_event(create_sport)
+        data["scheduled_at"] = '12/06/2022'
+        # When
+        response = client.put(
+            f"/api/v1/events/{str(create_event.uuid)}",
+            json=data,
+        )
+        result = response.json
+        # Assert
+        assert response.status_code == 422
+
+    def test_error_create_event_with_nonexistent_event(
+        self, client, create_sport, create_event
+    ):
+        # Given
+        data = self.make_raw_event(create_sport)
+        data["sport_uuid"] = str(uuid.uuid4())
+        # When
+        response = client.put(
+            f"/api/v1/events/{create_event.uuid}",
+            json=data,
+        )
+        result = response.json
+        # Assert
+        assert response.status_code == 404

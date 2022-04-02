@@ -25,7 +25,13 @@ class APISportBookException(Exception):
 
 
 class ApiEventValidationError(APISportBookException):
+    code = HTTPStatus.UNPROCESSABLE_ENTITY
     status_code = HTTPStatus.UNPROCESSABLE_ENTITY
+
+
+class ApiEventNotFound(werkzeug.exceptions.HTTPException):
+    code = HTTPStatus.NOT_FOUND
+    description = "Event not found"
 
 
 def handle_api_exceptions(app):

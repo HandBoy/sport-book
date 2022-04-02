@@ -1,10 +1,21 @@
 import uuid
 from http import HTTPStatus
 
-from app.api.exceptions import ApiEventValidationError, ApiSportNotFound
-from app.repositories.exceptions import EventValidationErrorException
+from app.api.exceptions import (
+    ApiEventNotFound,
+    ApiEventValidationError,
+    ApiSportNotFound,
+)
+from app.repositories.exceptions import (
+    EventNotFoundException,
+    EventValidationErrorException,
+)
 from app.repositories.sport_repository import SportNotFoundException
-from app.use_cases.event_use_cases import CreateEventUsecase, ListEventUsecase
+from app.use_cases.event_use_cases import (
+    CreateEventUsecase,
+    ListEventUsecase,
+    UpdateEventUsecase,
+)
 from app.use_cases.sport_use_cases import (
     CreateSportsUsecase,
     ListSportsUsecase,
@@ -43,10 +54,10 @@ class SportsListView(MethodResource):
 class SportsView(MethodResource):
     @use_kwargs(SportInSchema)
     @marshal_with(SportOutSchema, code=HTTPStatus.OK)
-    def put(self, sport_id: uuid.UUID, **kwargs):
+    def put(self, sport_uuid: uuid.UUID, **kwargs):
         use_case = UpdateSportsUsecase()
         try:
-            sport_raw = use_case.execute(sport_id, kwargs)
+            sport_raw = use_case.execute(sport_uuid, kwargs)
         except SportNotFoundException as err:
             raise ApiSportNotFound()
 
@@ -74,3 +85,21 @@ class EventListView(MethodResource):
 
         except EventValidationErrorException as err:
             raise ApiEventValidationError(str(err))
+
+
+@doc(description="a pet store", tags=["event"])
+class EventView(MethodResource):
+    @use_kwargs(EventInSchema)
+    @marshal_with(EventOutSchema, code=HTTPStatus.OK)
+    def put(self, event_uuid: uuid.UUID, **kwargs):
+        use_case = UpdateEventUsecase()
+        try:
+            event = use_case.execute(event_uuid, kwargs)
+        except SportNotFoundException as err:
+            raise ApiSportNotFound()
+        except EventNotFoundException as err:
+            raise ApiEventNotFound()
+        except EventValidationErrorException as err:
+            raise ApiEventValidationError(str(err))
+
+        return event.dict(), 200

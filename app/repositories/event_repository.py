@@ -10,7 +10,7 @@ from .exceptions import EventNotFoundException, RepositoryOperationalError
 
 class EventRepository:
     def __init__(self) -> None:
-        self.db = get_db()
+        self._db = get_db()
 
     def get_events(self, filters: Dict = None) -> List[Event]:
         events = []
@@ -23,7 +23,7 @@ class EventRepository:
             parameters = tuple(filters.values())
 
         try:
-            result = self.db.execute(query, parameters).fetchall()
+            result = self._db.execute(query, parameters).fetchall()
         except OperationalError as err:
             raise RepositoryOperationalError(str(err))
 
@@ -33,7 +33,7 @@ class EventRepository:
         return events
 
     def get_event_by_uuid(self, uuid: UUID) -> Event:
-        result = self.db.execute(
+        result = self._db.execute(
             "SELECT * FROM event WHERE uuid = ?",
             (str(uuid),),
         ).fetchone()
@@ -44,7 +44,7 @@ class EventRepository:
         return Event(**result)
 
     def create_event(self, event: Event):
-        self.db.execute(
+        self._db.execute(
             (
                 "INSERT INTO event (sport_id, uuid, name, slug, active, event_type, status, scheduled_at, start_at)"
                 "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"
@@ -61,4 +61,28 @@ class EventRepository:
                 event.start_at,
             ),
         )
-        self.db.commit()
+        self._db.commit()
+
+    def update_event(self, uuid: UUID, event: Event) -> Event:
+        self._db.execute(
+            (
+                "UPDATE event "
+                "SET name = ?, slug = ?, active = ?, event_type = ?,"
+                "status = ?, scheduled_at = ?, start_at = ? "
+                "WHERE uuid = ?"
+            ),
+            (
+                event.name,
+                event.slug,
+                event.active,
+                event.event_type,
+                event.status,
+                event.scheduled_at,
+                event.start_at,
+                str(uuid),
+            ),
+        )
+
+        self._db.commit()
+
+        return self.get_event_by_uuid(uuid)

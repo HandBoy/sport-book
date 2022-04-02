@@ -11,7 +11,7 @@ from ..ext.database import get_db
 
 class SportRepository:
     def __init__(self) -> None:
-        self.db = get_db()
+        self._db = get_db()
 
     def get_sport(self, filters: Dict = None) -> List[Sport]:
         sports = []
@@ -23,7 +23,7 @@ class SportRepository:
             query += generate_query_filter(filters)
             parameters = tuple(filters.values())
 
-        result = self.db.execute(query, parameters).fetchall()
+        result = self._db.execute(query, parameters).fetchall()
 
         for sport in result:
             sports.append(Sport(**sport))
@@ -31,7 +31,7 @@ class SportRepository:
         return sports
 
     def get_sport_by_id(self, id: int) -> Sport:
-        result = self.db.execute(
+        result = self._db.execute(
             "SELECT * FROM sport WHERE id = ?",
             (id,),
         ).fetchone()
@@ -42,7 +42,7 @@ class SportRepository:
         return Sport(**result)
 
     def get_sport_by_uuid(self, uuid: UUID) -> Sport:
-        result = self.db.execute(
+        result = self._db.execute(
             "SELECT * FROM sport WHERE uuid = ?",
             (str(uuid),),
         ).fetchone()
@@ -53,20 +53,20 @@ class SportRepository:
         return Sport(**result)
 
     def create_sport(self, sport: Sport) -> Sport:
-        result = self.db.execute(
+        result = self._db.execute(
             "INSERT INTO sport (uuid, slug, active) VALUES (?, ?, ?)",
             (str(sport.uuid), sport.slug, sport.active),
         )
-        self.db.commit()
+        self._db.commit()
 
         return self.get_sport_by_id(result.lastrowid)
 
     def update_sport(self, uuid: UUID, sport: Sport) -> Sport:
-        self.db.execute(
+        self._db.execute(
             "UPDATE sport SET slug = ?, active = ? WHERE uuid = ?",
             (sport.slug, sport.active, str(uuid)),
-        ).fetchone()
+        )
 
-        self.db.commit()
+        self._db.commit()
 
         return self.get_sport_by_uuid(uuid)
