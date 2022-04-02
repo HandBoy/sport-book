@@ -4,3 +4,4 @@ flask-marshmallow==0.14.0
 flask-restful==0.3.9
 pydantic==1.9.0
 python-dotenv==0.20.0
+python-slugify==6.1.1

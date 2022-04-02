@@ -32,7 +32,11 @@ def app(mock_env):
 def create_sport():
     repository = SportRepository()
     result = repository.create_sport(
-        Sport(id=1, slug="teste-01", active=True),
+        Sport(
+            id=1,
+            slug="teste-01",
+            active=True,
+        ),
     )
     return result
 
@@ -49,8 +53,8 @@ def create_event(create_sport):
         active=True,
         event_type=EventType.preplay,
         status=EventStatus.pending,
-        scheduled_at=datetime.now(),
-        start_at=datetime.now(),
+        scheduled_at=datetime.utcnow(),
+        start_at=datetime.utcnow(),
     )
     repository.create_event(event)
     return event

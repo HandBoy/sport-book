@@ -4,7 +4,7 @@ from flask import Flask
 from flask_apispec import FlaskApiSpec
 from flask_restful import Api
 
-from app.api import sports
+from app.api import exceptions, views
 
 from . import configuration
 from .ext import database, serializer
@@ -19,13 +19,15 @@ def create_app(config_name=None):
 
     database.init_app(app)
     serializer.init_app(app)
-    #swagger.init_app(app)
+    exceptions.handle_api_exceptions(app)
 
-    api.add_resource(sports.SportsListView, "/api/v1/sports")
-    api.add_resource(sports.SportsView, "/api/v1/sports/<uuid:sport_id>")
+    api.add_resource(views.SportsListView, "/api/v1/sports")
+    api.add_resource(views.SportsView, "/api/v1/sports/<uuid:sport_id>")
+    api.add_resource(views.EventListView, "/api/v1/events")
 
     docs = FlaskApiSpec(app)
-    docs.register(sports.SportsListView)
-    docs.register(sports.SportsView)
+    docs.register(views.SportsListView)
+    docs.register(views.SportsView)
+    docs.register(views.EventListView)
 
     return app
