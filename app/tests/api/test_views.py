@@ -1,7 +1,7 @@
 import uuid
 from datetime import datetime
 
-from app.domain import EventStatus, EventType
+from app.domain import EventStatus, EventType, Outcome
 
 
 class TestListSports:
@@ -256,6 +256,7 @@ class TestUpdateEvents:
         # Assert
         assert response.status_code == 200
         assert result["name"] == data["name"]
+
     def test_error_create_event_without_required_field(
         self, client, create_sport, create_event
     ):
@@ -277,7 +278,7 @@ class TestUpdateEvents:
     ):
         # Given
         data = self.make_raw_event(create_sport)
-        data["scheduled_at"] = '12/06/2022'
+        data["scheduled_at"] = "12/06/2022"
         # When
         response = client.put(
             f"/api/v1/events/{str(create_event.uuid)}",
@@ -301,3 +302,171 @@ class TestUpdateEvents:
         result = response.json
         # Assert
         assert response.status_code == 404
+
+
+class TestListSelections:
+    def test_list_selections(self, client):
+        # Give
+        # Act
+        response = client.get("/api/v1/selections")
+        # Then
+        assert response.status_code == 200
+        assert len(response.json) == 4
+
+    def test_get_selections_by_price(self, client, create_selection):
+        # Give
+        filters = f"?price={create_selection.price}"
+        # Act
+        response = client.get(f"/api/v1/selections{filters}")
+        # Then
+        assert response.status_code == 200
+        assert len(response.json) == 1
+
+    def test_get_selections_by_slug_and_active(self, client, create_selection):
+        # Give
+        filters = f"?price={create_selection.price}&active=1"
+        # Act
+        response = client.get(f"/api/v1/selections{filters}")
+        # Them
+        assert response.status_code == 200
+        assert len(response.json) == 1
+
+    def test_get_selections_by_slug_and_active_false(self, client, create_selection):
+        # Give
+        filters = f"?price={create_selection.price}&active=0"
+        # Act
+        response = client.get(f"/api/v1/selections{filters}")
+        # Them
+        assert response.status_code == 200
+        assert len(response.json) == 0
+
+    def test_get_selections_by_nonexistent_field(self, client, create_selection):
+        # Give
+        filters = f"?other=15"
+        # Act
+        response = client.get(f"/api/v1/selections{filters}")
+        # Them
+        assert response.status_code == 400
+        assert "message" in response.json
+        assert "code" in response.json
+
+
+class TestPostSelection:
+    def test_create_selection(self, client, make_raw_selection):
+        # Given
+        data = make_raw_selection
+        # When
+        response = client.post("/api/v1/selections", json=data)
+        data = response.json
+        # Assert
+        assert response.status_code == 201
+
+    def test_create_selection_check_contract(self, client, make_raw_selection):
+        # Given
+        data = make_raw_selection
+        expected_contract = data.keys()
+        # When
+        response = client.post("/api/v1/selections", json=data)
+        data = response.json
+        # Then
+        assert response.status_code == 201
+        assert expected_contract, list(data.keys())
+
+    def test_error_create_selection_without_required_fields(self, client):
+        # Given
+        data = {"active": True}
+        # When
+        response = client.post("/api/v1/selections", json=data)
+        # Then
+        assert response.status_code == 422
+
+    def test_error_create_selection_with_invalid_outcome(
+        self, client, make_raw_selection
+    ):
+        # Given
+        data = make_raw_selection
+        data["outcome"] = "other"
+        headers = {"content-type": "application/json"}
+        # When
+        response = client.post("/api/v1/selections", json=data, headers=headers)
+        # Then
+        assert response.status_code == 422
+        assert "message" in response.json
+        assert "code" in response.json
+
+
+class TestUpdateSelection:
+    def test_update_update_selection(
+        self, client, make_raw_selection, create_selection
+    ):
+        # Given
+        data = make_raw_selection
+        # When
+        response = client.put(
+            f"/api/v1/selections/{str(create_selection.uuid)}",
+            json=data,
+        )
+        result = response.json
+        # Assert
+        assert response.status_code == 200
+        assert result["price"] == data["price"]
+
+    def test_update_update_nonexistent_selection(
+        self, client, make_raw_selection, create_selection
+    ):
+        # Given
+        data = make_raw_selection
+        # When
+        response = client.put(
+            f"/api/v1/selections/{str(uuid.uuid4())}",
+            json=data,
+        )
+        result = response.json
+        # Assert
+        assert response.status_code == 404
+
+    def test_error_update_selection_without_required_field(
+        self, client, make_raw_selection, create_selection
+    ):
+        # Given
+        data = make_raw_selection
+        del data["price"]
+        del data["outcome"]
+        # When
+        response = client.put(
+            f"/api/v1/selections/{str(create_selection.uuid)}",
+            json=data,
+        )
+        result = response.json
+        # Assert
+        assert response.status_code == 422
+
+    def test_error_update_selection_with_invalid_outcome(
+        self, client, make_raw_selection, create_selection
+    ):
+        # Given
+        data = make_raw_selection
+        data["outcome"] = "other"
+        # When
+        response = client.put(
+            f"/api/v1/selections/{str(create_selection.uuid)}",
+            json=data,
+        )
+        result = response.json
+        # Assert
+        assert response.status_code == 422
+
+    def test_error_update_selection_with_nonexistent_event(
+        self, client, make_raw_selection, create_selection
+    ):
+        # Given
+        data = make_raw_selection
+        data["sport_uuid"] = str(uuid.uuid4())
+        # When
+        response = client.put(
+            f"/api/v1/selections/{create_selection.uuid}",
+            json=data,
+        )
+        result = response.json
+        # Assert
+        assert response.status_code == 422

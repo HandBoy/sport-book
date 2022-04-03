@@ -28,9 +28,24 @@ class EventNotFoundException(RepositoryException):
 
 class EventForeignKeyException(RepositoryException):
     def __init__(self):
-        self.message = "Sport not found"
+        self.message = "Event not found"
 
 
 class EventValidationErrorException(RepositoryException):
+    def __init__(self, message):
+        self.message = message
+
+
+class SelectionNotFoundException(RepositoryException):
+    def __init__(self):
+        self.message = "Selection not found"
+
+
+class SelectionForeignKeyException(RepositoryException):
+    def __init__(self):
+        self.message = "Event not found"
+
+
+class SelectionValidationErrorException(RepositoryException):
     def __init__(self, message):
         self.message = message

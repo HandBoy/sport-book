@@ -19,11 +19,9 @@ class EventInSchema(ma.Schema):
     active = ma.fields.Bool(required=True)
     event_type = ma.fields.Str(required=True)
     status = ma.fields.Str(required=True)
-    scheduled_at = ma.fields.Str(required=True)
+    scheduled_at = ma.fields.DateTime(required=True)
     start_at = ma.fields.DateTime()
 
-    class Meta:
-        dateformat = '%Y-%m-%dT%H:%M:%S'
 
 class EventOutSchema(ma.Schema):
     uuid = ma.fields.UUID()
@@ -36,3 +34,19 @@ class EventOutSchema(ma.Schema):
     scheduled_at = ma.fields.Str()
     start_at = ma.fields.Str()
     created_at = ma.fields.Str()
+
+
+class SelectionInSchema(ma.Schema):
+    event_uuid = ma.fields.UUID(required=True)
+    price = ma.fields.Float(required=True)
+    active = ma.fields.Bool(required=True)
+    outcome = ma.fields.Str(required=True)
+
+
+class SelectionOutSchema(ma.Schema):
+    uuid = ma.fields.UUID()
+    event_uuid = ma.fields.UUID()
+    price = ma.fields.Float()
+    active = ma.fields.Bool()
+    outcome = ma.fields.Str()
+    created_at = ma.fields.DateTime()

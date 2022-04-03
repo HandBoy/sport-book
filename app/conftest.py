@@ -4,8 +4,9 @@ import pytest
 from slugify import slugify
 
 from app import create_app
-from app.domain import Event, EventStatus, EventType, Sport
+from app.domain import Event, EventStatus, EventType, Outcome, Selection, Sport
 from app.repositories.event_repository import EventRepository
+from app.repositories.selection_repository import SelectionRepository
 from app.repositories.sport_repository import SportRepository
 
 from .ext import database
@@ -57,4 +58,28 @@ def create_event(create_sport):
         start_at=datetime.utcnow(),
     )
     repository.create_event(event)
-    return event
+    return repository.get_event_by_uuid(event.uuid)
+
+
+@pytest.fixture()
+def create_selection(create_event):
+    repository = SelectionRepository()
+    selection = Selection(
+        event_id=create_event.id,
+        price=10.5,
+        active=True,
+        outcome=Outcome.unsettled.value,
+    )
+    repository.create_selection(selection)
+
+    return repository.get_selection_by_uuid(selection.uuid)
+
+
+@pytest.fixture()
+def make_raw_selection(create_event):
+    return {
+        "event_uuid": create_event.uuid,
+        "price": 50.75,
+        "active": True,
+        "outcome": Outcome.unsettled.value,
+    }

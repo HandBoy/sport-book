@@ -48,6 +48,7 @@ class UpdateEventUsecase:
         try:
             event = Event(**event_raw)
             event = repo.update_event(uuid, event)
+
             return event
         except ValidationError as err:
             raise EventValidationErrorException(str(err))

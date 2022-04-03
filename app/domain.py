@@ -46,3 +46,20 @@ class Event(BaseModel):
             values["slug"] = slugify(values.get("name"))
 
         return values
+
+
+class Outcome(str, Enum):
+    unsettled = "unsettled"
+    void = "void"
+    lose = "lose"
+    win = "win"
+
+
+class Selection(BaseModel):
+    id: Optional[int]
+    event_id: int
+    uuid = uuid4()
+    price: float
+    active: bool = False
+    outcome: Outcome
+    created_at: datetime = datetime.utcnow()
