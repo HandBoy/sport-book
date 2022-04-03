@@ -3,6 +3,8 @@ from uuid import UUID
 
 from pydantic import ValidationError
 
+from app.use_cases.event_use_cases import InactivateEventUseCase
+
 from ..domain import Selection
 from ..repositories.event_repository import EventRepository
 from ..repositories.exceptions import (
@@ -48,6 +50,19 @@ class UpdateSelectionUsecase:
         try:
             selection = Selection(**selection_raw)
             selection = repo.update_selection(uuid, selection)
+            self.inactivate_event(selection_raw)
             return selection
         except ValidationError as err:
             raise SelectionValidationErrorException(str(err))
+
+    def inactivate_event(self, selection_raw):
+        """When all the selections of a particular event are inactive, the event becomes inactive"""
+        if selection_raw["active"]:
+            return
+
+        filters = {"event_id": selection_raw["event_id"]}
+        selections = ListSelectionUsecase().execute(filters)
+        inactivate_event = all([not selection.active for selection in selections])
+
+        if inactivate_event:
+            InactivateEventUseCase().execute(selection_raw.get("event_uuid"))

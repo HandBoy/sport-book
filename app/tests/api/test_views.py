@@ -244,7 +244,7 @@ class TestUpdateEvents:
             "start_at": datetime.utcnow().isoformat(),
         }
 
-    def test_create_event(self, client, create_sport, create_event):
+    def test_update_event(self, client, create_sport, create_event):
         # Given
         data = self.make_raw_event(create_sport)
         # When
@@ -257,7 +257,7 @@ class TestUpdateEvents:
         assert response.status_code == 200
         assert result["name"] == data["name"]
 
-    def test_error_create_event_without_required_field(
+    def test_error_update_event_without_required_field(
         self, client, create_sport, create_event
     ):
         # Given
@@ -273,7 +273,7 @@ class TestUpdateEvents:
         # Assert
         assert response.status_code == 422
 
-    def test_error_create_event_with_invalid_datetime(
+    def test_error_update_event_with_invalid_datetime(
         self, client, create_sport, create_event
     ):
         # Given
@@ -288,7 +288,7 @@ class TestUpdateEvents:
         # Assert
         assert response.status_code == 422
 
-    def test_error_create_event_with_nonexistent_event(
+    def test_error_update_event_with_nonexistent_event(
         self, client, create_sport, create_event
     ):
         # Given

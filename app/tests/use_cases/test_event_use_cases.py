@@ -5,14 +5,18 @@ import pytest
 from app.domain import EventStatus, EventType
 from app.repositories.exceptions import (
     EventForeignKeyException,
-    EventNotFoundException,
     EventValidationErrorException,
 )
-from app.use_cases.event_use_cases import CreateEventUsecase, ListEventUsecase
+from app.repositories.sport_repository import SportRepository
+from app.use_cases.event_use_cases import (
+    CreateEventUsecase,
+    ListEventUsecase,
+    UpdateEventUsecase,
+)
 from slugify import slugify
 
 
-class TestListSportsUsecase:
+class TestListEventsUsecase:
     def test_list_event(self, app, create_event):
         # Give
         use_case = ListEventUsecase()
@@ -99,3 +103,23 @@ class TestCreateEventUsecase:
         # Them
         with pytest.raises(EventForeignKeyException):
             use_case.execute(data)
+
+
+class TestInactivateEventUseCase:
+    def test_inactivate_all_events(self, app, create_event):
+        # Give
+        sport = SportRepository().get_sport_by_id(create_event.sport_id)
+        data = {
+            "sport_uuid": sport.uuid,
+            "name": "New Event",
+            "active": False,
+            "event_type": EventType.preplay.value,
+            "status": EventStatus.pending.value,
+            "scheduled_at": datetime.utcnow().isoformat(),
+            "start_at": datetime.utcnow().isoformat(),
+        }
+        # Act
+        UpdateEventUsecase().execute(create_event.uuid, data)
+        # Them
+        sport = SportRepository().get_sport_by_id(create_event.sport_id)
+        assert sport.active == False

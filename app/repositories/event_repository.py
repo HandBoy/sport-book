@@ -31,6 +31,17 @@ class EventRepository:
             events.append(Event(**event))
 
         return events
+    
+    def get_event_by_id(self, id: int) -> Event:
+        result = self._db.execute(
+            "SELECT * FROM event WHERE id = ?",
+            (id,),
+        ).fetchone()
+
+        if result is None:
+            raise EventNotFoundException()
+
+        return Event(**result)
 
     def get_event_by_uuid(self, uuid: UUID) -> Event:
         result = self._db.execute(

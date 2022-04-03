@@ -15,6 +15,20 @@ class ListSportsUsecase:
         return sports
 
 
+class GetSportByUUIDUsecase:
+    def execute(self, uuid: UUID) -> Sport:
+        repo = SportRepository()
+        sport = repo.get_sport_by_uuid(uuid)
+        return sport
+
+
+class GetSportByIdUsecase:
+    def execute(self, id: int) -> Sport:
+        repo = SportRepository()
+        sport = repo.get_sport_by_id(id)
+        return sport
+
+
 class CreateSportsUsecase:
     def execute(self, sport_raw: Dict) -> Sport:
         repo = SportRepository()
@@ -38,3 +52,11 @@ class UpdateSportsUsecase:
 
         sport = repo.update_sport(uuid, sport)
         return sport
+
+
+class InactivateSportUseCase:
+    def execute(self, sport_uuid: UUID) -> Sport:
+        sport = GetSportByUUIDUsecase().execute(sport_uuid)
+        sport.active = False
+
+        return UpdateSportsUsecase().execute(sport.uuid, sport.dict())
