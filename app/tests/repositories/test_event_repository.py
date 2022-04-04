@@ -62,13 +62,13 @@ class TestGetEventRepository:
 
     def test_get_all_active_events(self, app):
         # Give
-        filters = {"active": 0}
+        filters = {"active": 1}
         repository = EventRepository()
         # Act
         events = repository.get_events(filters)
         # Them
         assert events != None
-        assert len(events) == 4
+        assert len(events) == 2
 
     def test_get_events_by_unexistent_filter(self, app):
         # Give
