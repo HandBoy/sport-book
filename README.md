@@ -71,6 +71,8 @@ $ mkdocs gh-deploy
 - [ ] Filters: All (sports/events) with a minimum number of active (events/selections) higher than a threshold
 - [ ] Filters: Events scheduled to start in a specific timeframe for a specific timezone
 - [X] Make File
+- [X] Documenting project
+- [X] Add swagger.
 
 
 ## Points to Improve

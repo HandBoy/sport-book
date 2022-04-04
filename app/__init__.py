@@ -30,6 +30,7 @@ def create_app(config_name=None):
     # Selections Endpoints
     api.add_resource(views.SelectionView, "/api/v1/selections")
     api.add_resource(views.SelectionByIdView, "/api/v1/selections/<uuid:selection_uuid>")
+    
     docs = FlaskApiSpec(app)
     docs.register(views.SportsListView)
     docs.register(views.SportsView)
