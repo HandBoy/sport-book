@@ -22,7 +22,8 @@ $ make run
 ```
 
 ## Documentation
-You can acces the documentation online: [link]()
+You can acces the documentation online: [link](https://handboy.github.io/sport-book/)
+To run locally:
 
 ```shell
 # Run and access Mkdocs
