@@ -1,5 +1,15 @@
 # Sportsbook
 
+## Expecifications:
+
+Application builded with:
+- Framework: Flask;
+- Database: Sqlite3;
+- Serializer: Mashmallow;
+- Documentation:
+    - Swagger for API.
+    - Mkdocs to project info.
+
 ## Start Project
 
 ```shell
@@ -29,7 +39,9 @@ flask run
 ```
 
 ## Documentation
-I use Mkdocs to create a live documentation:
+I use Mkdocs to create a live documentation. You can acces the documentation online: [link](https://handboy.github.io/sport-book/)
+
+Or run locally:
 
 ```shell
 # Run and access Mkdocs
@@ -55,21 +67,21 @@ $ mkdocs gh-deploy
 - [X] When all the selections of a particular event are inactive, the event becomes inactive.
 - [X] When all the events of a sport are inactive, the sport becomes inactive
 - [X] Sports, events and selections need to be persistently stored (SQLite is allowed)
-- [] Filters: All (sports/events/selections) with a name satisfying a particular regex
-- [] Filters: All (sports/events) with a minimum number of active (events/selections) higher than a threshold
-- [] Filters: Events scheduled to start in a specific timeframe for a specific timezone
+- [ ] Filters: All (sports/events/selections) with a name satisfying a particular regex
+- [ ] Filters: All (sports/events) with a minimum number of active (events/selections) higher than a threshold
+- [ ] Filters: Events scheduled to start in a specific timeframe for a specific timezone
 - [X] Make File
 
 
 ## Points to Improve
-- [] Try fix warnings from tests.
-- [] Add authorization in endpoints.
-- [] Expecify the error when send data different expected by scheme.
-- [] Add pagination.
-- [] Remove code duplication between repositories.
-- [] Add partial update.
-- [] Register Api exception.
-- [] Increase coverage.
+- [ ] Try fix warnings from tests.
+- [ ] Add authorization in endpoints.
+- [ ] Expecify the error when send data different expected by scheme.
+- [ ] Add pagination.
+- [ ] Remove code duplication between repositories.
+- [ ] Add partial update.
+- [ ] Register Api exception.
+- [ ] Increase coverage.
 
 
 ## Utils References
