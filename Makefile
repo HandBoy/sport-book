@@ -19,7 +19,7 @@ doc:		## Run mkdocs documentation.
 test: 		## Run command test.
 	pytest
 
-routes:	## Run migrate django command.
+routes:		## Run migrate django command.
 	flask routes
 
 venv-path:	## Show The path of the virtual env activated.
