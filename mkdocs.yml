@@ -1,0 +1,8 @@
+site_name: SportBook Project
+
+nav:
+  - Getting Started: index.md
+  - Api Documentation: api.md
+
+theme:
+  name: "material"

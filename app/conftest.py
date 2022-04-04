@@ -62,6 +62,20 @@ def create_event(create_sport):
 
 
 @pytest.fixture()
+def make_raw_event(create_sport):
+    name = "Updated Event"
+    return {
+        "sport_uuid": create_sport.uuid,
+        "name": name,
+        "active": True,
+        "event_type": EventType.preplay.value,
+        "status": EventStatus.pending.value,
+        "scheduled_at": datetime.utcnow().isoformat(),
+        "start_at": datetime.utcnow().isoformat(),
+    }
+
+
+@pytest.fixture()
 def create_selection(create_event):
     repository = SelectionRepository()
     selection = Selection(
