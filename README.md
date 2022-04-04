@@ -13,6 +13,11 @@ Application builded with:
 ## Start Project
 
 ```shell
+# Create an env file in root
+$ cp .env.default .env
+
+# Add enviroments values in this file.
+
 # Python path
 $ which python3
 
